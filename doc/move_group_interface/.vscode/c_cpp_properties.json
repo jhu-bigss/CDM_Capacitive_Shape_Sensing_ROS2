@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/ros/foxy/include/**",
+                // "/home/bigss-vm/ws_moveit2/**",
+                "/usr/include/**"
+                // "/home/bigss-vm/ws_moveit2/src/moveit_visual_tools/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang-10",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "compileCommands": "/home/bigss-vm/ws_moveit/build/rviz_visual_tools/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

@@ -165,7 +165,7 @@ int main(int argc, char** argv)
   // ^^^^^^^^^^^^^^^^^^
   // Servo requires a number of parameters to dictate its behavoir. These can be read automatically by using the
   // :code:`makeServoParameters` helper function
-  auto servo_parameters = moveit_servo::ServoParameters::makeServoParameters(node_);
+  auto servo_parameters = moveit_servo::ServoParameters::makeServoParameters(node_, LOGGER);
   if (!servo_parameters)
   {
     RCLCPP_FATAL(LOGGER, "Failed to load the servo parameters");

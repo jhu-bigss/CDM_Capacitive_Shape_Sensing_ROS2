@@ -1,0 +1,36 @@
+controller_names:
+  - snake_tool_controller
+
+snake_tool_controller:
+  action_ns: follow_joint_trajectory
+  type: FollowJointTrajectory
+  default: true
+  joints:
+    - joint_00
+    - joint_01
+    - joint_02
+    - joint_03
+    - joint_04
+    - joint_05
+    - joint_06
+    - joint_07
+    - joint_08
+    - joint_09
+    - joint_10
+    - joint_11
+    - joint_12
+    - joint_13    
+    - joint_14
+    - joint_15
+    - joint_16
+    - joint_17
+    - joint_18
+    - joint_19
+    - joint_20   
+    - joint_21
+    - joint_22
+    - joint_23
+    - joint_24
+    - joint_25
+    - joint_26
+    - joint_27       

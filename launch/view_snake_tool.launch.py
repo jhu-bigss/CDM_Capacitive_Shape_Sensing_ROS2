@@ -51,6 +51,16 @@ def generate_launch_description():
 
     robot_description = ParameterValue(Command(['xacro ', LaunchConfiguration('model')]),
                                        value_type=str)
+    
+    # planning_context
+    robot_description_config = xacro.process_file(
+        os.path.join(
+            get_package_share_directory("snake_description"),
+            "urdf",
+            "snake.urdf.xacro",
+        )
+    )                                       
+    robot_description_run_move = {"robot_description": robot_description_config.toxml()}
                                        
     robot_description_semantic_config = load_file(
         "snake_description", "urdf/snake_tool.srdf"
@@ -110,13 +120,13 @@ def generate_launch_description():
         executable="move_group",
         output="screen",
         parameters=[
-            robot_description,
-            robot_description_semantic,
-            kinematics_yaml,
-            ompl_planning_pipeline_config,
-            trajectory_execution,
-            moveit_controllers,
-            planning_scene_monitor_parameters,
+            robot_description_run_move,
+            #robot_description_semantic,
+            #kinematics_yaml,
+            #ompl_planning_pipeline_config,
+            #trajectory_execution,
+            #moveit_controllers,
+            #planning_scene_monitor_parameters,
         ],
     )
     

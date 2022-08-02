@@ -121,12 +121,12 @@ def generate_launch_description():
         output="screen",
         parameters=[
             robot_description_run_move,
-            #robot_description_semantic,
-            #kinematics_yaml,
-            #ompl_planning_pipeline_config,
-            #trajectory_execution,
-            #moveit_controllers,
-            #planning_scene_monitor_parameters,
+            robot_description_semantic,
+            kinematics_yaml,
+            ompl_planning_pipeline_config,
+            trajectory_execution,
+            moveit_controllers,
+            planning_scene_monitor_parameters,
         ],
     )
     
@@ -156,7 +156,7 @@ def generate_launch_description():
         model_arg,
         rviz_arg,
         # newly added
-        # run_move_group_node,
+        run_move_group_node,
         joint_state_publisher_node,
         joint_state_publisher_gui_node,
         robot_state_publisher_node,

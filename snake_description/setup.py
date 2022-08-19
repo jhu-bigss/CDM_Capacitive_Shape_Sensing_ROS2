@@ -28,7 +28,6 @@ setup(
     entry_points={
         'console_scripts': [
             'snake_bend_slider_gui = snake_bend_gui.snake_bend_slider_gui:main',
-            'snake_bend_capa_mapper = snake_bend_gui.snake_bend_capa_mapper:main'
         ],
     },
 )

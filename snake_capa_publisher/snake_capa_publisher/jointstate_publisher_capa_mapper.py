@@ -4,7 +4,7 @@ from re import S
 import math
 import threading
 import sys
-from capa_interfaces.msg import Num
+from snake_capa_msg.msg import Capa
 
 # from python_qt_binding import QtCore, QtWidgets
 
@@ -20,7 +20,7 @@ class MapPubSub(Node):
     def __init__(self):
         super().__init__('capa_mapper')
         self.subscription = self.create_subscription(
-            Num,
+            Capa,
             'capa_sensor',
             self.mapper_listener_callback,
             10)

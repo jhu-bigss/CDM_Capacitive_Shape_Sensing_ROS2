@@ -13,7 +13,7 @@ def generate_launch_description():
     default_model_path = snake_description_path / 'urdf/snake_tool.urdf'
     default_rviz_config_path = snake_description_path / 'rviz/view_snake.rviz'
 
-    gui_arg = DeclareLaunchArgument(name='gui', default_value='false', choices=['true', 'false'],
+    gui_arg = DeclareLaunchArgument(name='gui', default_value='true', choices=['true', 'false'],
                                     description='Flag to enable snake_bend_slider_gui')
     model_arg = DeclareLaunchArgument(name='model', default_value=str(default_model_path),
                                       description='Absolute path to robot urdf file')
@@ -27,13 +27,6 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         parameters=[{'robot_description': robot_description}]
-    )
-
-    # Depending on gui parameter, either launch joint_state_publisher or joint_state_publisher_gui
-    joint_state_publisher_node = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        condition=UnlessCondition(LaunchConfiguration('gui'))
     )
 
     snake_bend_slider_gui_node = Node(
@@ -54,7 +47,6 @@ def generate_launch_description():
         gui_arg,
         model_arg,
         rviz_arg,
-        joint_state_publisher_node,
         snake_bend_slider_gui_node,
         robot_state_publisher_node,
         rviz_node

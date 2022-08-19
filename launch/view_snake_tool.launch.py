@@ -13,7 +13,7 @@ def generate_launch_description():
     default_model_path = snake_description_path / 'urdf/snake_tool.urdf'
     default_rviz_config_path = snake_description_path / 'rviz/view_snake.rviz'
 
-    gui_arg = DeclareLaunchArgument(name='gui', default_value='true', choices=['true', 'false'],
+    gui_arg = DeclareLaunchArgument(name='gui', default_value='false', choices=['true', 'false'],
                                     description='Flag to enable snake_bend_slider_gui')
     model_arg = DeclareLaunchArgument(name='model', default_value=str(default_model_path),
                                       description='Absolute path to robot urdf file')

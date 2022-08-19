@@ -98,25 +98,25 @@ class MapPubSub(Node):
                                       (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
                                       (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
                                       (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp))]  #top node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
+                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp))]  #top node
 
             self.publisher.publish(self.joint_states)
         

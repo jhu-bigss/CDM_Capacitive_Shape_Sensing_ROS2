@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'test_param'
+package_name = 'snake_param_reader'
 
 setup(
     name=package_name,

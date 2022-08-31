@@ -5,7 +5,7 @@ from rclpy.node import Node
 class TestParams(Node):
 
     def __init__(self):
-        super().__init__('test_params_rclpy')
+        super().__init__('reader_params_rclpy')
 
         self.declare_parameters(
             namespace='',

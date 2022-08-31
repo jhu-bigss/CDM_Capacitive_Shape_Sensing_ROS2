@@ -1,0 +1,5 @@
+param_reader_node:
+  ros__parameters:
+    double_A: 1.0
+    double_B: 2.0
+    double_C: 3.0

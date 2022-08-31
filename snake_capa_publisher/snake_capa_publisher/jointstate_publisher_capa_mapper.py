@@ -19,6 +19,13 @@ capa0_temp, capa1_temp, capa2_temp = 0.0, 0.0, 0.0
 class MapPubSub(Node):
     def __init__(self):
         super().__init__('capa_mapper')
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('bottom', 0.0),
+                ('middle', 0.0),
+                ('top', 0.0)
+            ])
         self.subscription = self.create_subscription(
             Capa,
             'capa_sensor',
@@ -41,7 +48,11 @@ class MapPubSub(Node):
         capa0_val = msg.capa0
         capa1_val = msg.capa1
         capa2_val = msg.capa2
+
+        # test obtaining params from yaml file
+        S1_top = self.get_parameter('top')
         
+
         if mapper_counter < 50:
             capa0_temp = capa0_temp + capa0_val
             capa1_temp = capa1_temp + capa1_val
@@ -58,6 +69,7 @@ class MapPubSub(Node):
         
 
         else: # publish to the joint state
+            print(S1_top.get_parameter_value())
             # print((math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)))
             # print((math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp) - 63.72+63.72))
             # print((math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)-7.6044))

@@ -10,9 +10,9 @@ class TestParams(Node):
         self.declare_parameters(
             namespace='',
             parameters=[
-                ('double_A', 0.0),
-                ('double_B', 0.0),
-                ('double_C', 0.0)
+                ('bottom', 0.0),
+                ('middle', 0.0),
+                ('top', 0.0)
             ])
         
 

@@ -26,11 +26,7 @@ def generate_launch_description():
                                     description='Flag to enable snake_bend_slider_gui')
 
     snake_rviz = launch.actions.IncludeLaunchDescription(PythonLaunchDescriptionSource(
-        os.path.join(get_package_share_directory('snake_description'), 'launch', 'view_snake_tool.launch.py')),
-        launch_arguments={
-
-        }
-    )
+        os.path.join(get_package_share_directory('snake_description'), 'launch', 'view_snake_tool.launch.py')))
 
     
     return launch.LaunchDescription([capa_publisher_node,

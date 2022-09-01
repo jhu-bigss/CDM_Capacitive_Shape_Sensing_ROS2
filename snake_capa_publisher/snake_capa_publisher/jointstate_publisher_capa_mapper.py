@@ -49,8 +49,10 @@ class MapPubSub(Node):
         capa1_val = msg.capa1
         capa2_val = msg.capa2
 
-        # test obtaining params from yaml file
-        S1_top = self.get_parameter('top')
+        # obtaining params from yaml file
+        top_joint = self.get_parameter('top').value
+        middle_joint = self.get_parameter('middle').value
+        bottom_joint = self.get_parameter('bottom').value
         
 
         if mapper_counter < 50:
@@ -101,33 +103,33 @@ class MapPubSub(Node):
                                     'joint_25',
                                     'joint_26']
 
-            self.joint_states.position = [(math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)),  #bottom node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.12987*(48.808*(capa1_val - capa1_temp)),  #middle node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp)),  #top node
-                                      (math.pi/180)*0.1*(43.27*(capa0_val - capa0_temp))]  #top node
+            self.joint_states.position = [(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp)]  #top node
 
             self.publisher.publish(self.joint_states)
         

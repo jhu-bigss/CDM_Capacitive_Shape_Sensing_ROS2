@@ -11,6 +11,11 @@
 * [snake_description](/snake_description/): Snake (CDM) URDF with a GUI.
 
 ## Run
+Updated launch file, single terminal run:
+```bash
+ros2 launch snake_capa_publisher snake_param.launch.py 
+```
+
 
 Plug in Arduino, and run:
 

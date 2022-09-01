@@ -18,14 +18,11 @@ Plug in Arduino, and run:
 ros2 run snake_capa_publisher capa_publisher
 ```
 
-```bash
-ros2 run snake_param_reader param_reader_node --ros-args --params-file ~/ros2_bigss_ws/src/CDM_CSS_fork/snake_param_reader/config/param.yaml
-```
 
 To Calibrate and send the data, run:
 
 ```bash
-ros2 run snake_capa_publisher capa_mapper
+ros2 launch snake_capa_publisher snake_param.launch.py 
 ```
 
 To view the snake tool in Rviz2, run:

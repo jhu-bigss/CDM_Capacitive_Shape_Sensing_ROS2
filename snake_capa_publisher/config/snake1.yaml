@@ -1,4 +1,4 @@
-param_reader_node:
+capa_mapper:
   ros__parameters:
     bottom: 4.402388994
     middle: 6.33869496

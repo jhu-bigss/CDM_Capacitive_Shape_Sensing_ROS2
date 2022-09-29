@@ -110,10 +110,10 @@ void setup()
 void loop()
 {
 
+
   if (DATA_READY0) {
     tcaselect(0);
     capas[0] = dataRead();
-
 
   } else if (DATA_READY1) {
     tcaselect(1);
@@ -125,31 +125,41 @@ void loop()
     capas[2] = dataRead();
 
   }
+        
   Serial.print(capas[0], DEC);
   Serial.print(F(", "));
   Serial.print(capas[1], DEC);
   Serial.print(F(", "));
   Serial.println(capas[2], DEC);
+
+    interrupts();
+
 }
 
 
 void MCU_callback0() {
+    noInterrupts();
   DATA_READY0 = true;
   DATA_READY1 = false;
   DATA_READY2 = false;
+
+
   //  Serial.println("7747_0 is here");
 
 }
 
 void MCU_callback1() {
+    noInterrupts();
   DATA_READY0 = false;
   DATA_READY1 = true;
   DATA_READY2 = false;
+
   //  Serial.println("7747_1 is here");
 
 }
 
 void MCU_callback2() {
+    noInterrupts();
   DATA_READY0 = false;
   DATA_READY1 = false;
   DATA_READY2 = true;

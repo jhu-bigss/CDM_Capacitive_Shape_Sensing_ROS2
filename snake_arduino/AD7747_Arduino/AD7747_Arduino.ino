@@ -1,4 +1,5 @@
 #include <Wire.h> //I2C library
+#define TCAADDR 0x70
 
 double capacitance = 0; //capacitance reading
 double capacitance0 = 0; // capa0 result to send to py
@@ -32,60 +33,75 @@ int CapOffsetPropH = B01110111; //cap offset properties high
 int CapOffsetPropL = B00011010; //cap Offset properties low
 // counter to determine the state
 int counter = 0;
+
 // counter to determine the printing state
-bool DATA_READY = false;
+volatile bool DATA_READY0 = false;
+volatile bool DATA_READY1 = false;
+volatile bool DATA_READY2 = false;
 // button state for button ISR
 bool button_state = false;
 
 // interrupt routines
-const byte interruptPin = 2;
+const byte interruptPin0 = 2;
+const byte interruptPin1 = 3;
+const byte interruptPin2 = 18;
+
+// capacitance array
+const int maxtca = 3;
+double capas[maxtca];
+
+// I2C multiplexer helper function
+void tcaselect(uint8_t i) {
+  if (i > 7) return;
+
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();
+}
 
 void setup()
 {
   Serial.begin(9600);
   Wire.begin();
-
   // interrupt service routine setup
-  pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), MCU_timer, FALLING);
-
-  Configuration(); //determine configuration properties in AD7745
-
-  Excitation(); //determine the excitation properties of the AD7745
-
-  CapInput(); //Capacitive input properties
-
-  CapDacARegister(); //Capacitive data aquisition properties
-  CapOffsetHighAdjust(); //The adjustment of the offset (mainly used in differential mode)
-  CapOffsetLowAdjust();  //The adjustment of the offset (mainly used in differential mode)
-
-  // addressRead(); //Reads address and provides binary value (used for debugging)
-
-  continuous(); //sets up continuous reading of the AD7745
-
-  CapGainHighAdjust(); //used for adjusting the gain of AD7745
-  CapGainLowAdjust();   //used for adjusting the gain of AD7745
+  pinMode(interruptPin0, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin0), MCU_callback0, FALLING);
+  pinMode(interruptPin1, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin1), MCU_callback1, FALLING);
+  pinMode(interruptPin2, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin2), MCU_callback2, FALLING);
 
 
-  //chip select DG4051E & DG4052E
-  pinMode(7, OUTPUT);
-  // initialize DG4052E
-  pinMode(12, OUTPUT);
-  pinMode(11, OUTPUT);
-  digitalWrite(7, LOW);
-  // initialize DG4051E
-  pinMode(10, OUTPUT);
-  pinMode(9, OUTPUT);
-  pinMode(8, OUTPUT);
+  for (int tca = 0; tca < maxtca; tca ++) {
+    tcaselect(tca);
+    delay(10);
 
-  // switch on X0Y0 (DG4052E)
-  digitalWrite(12, LOW); // A
-  digitalWrite(11, LOW); // B
+    Wire.beginTransmission(Address);  // reset AD7747
+    Wire.write(0xBF);
+    Wire.endTransmission();
+    delay(15);
 
-  // switch on X0 (DG4051E)
-//  digitalWrite(10, LOW); // A
-//  digitalWrite(9, LOW); // B
-//  digitalWrite(8, LOW); // C
+    Configuration(); //determine configuration properties in AD7745
+
+    Excitation(); //determine the excitation properties of the AD7745
+
+    CapInput(); //Capacitive input properties
+
+    CapDacARegister(); //Capacitive data aquisition properties
+    CapOffsetHighAdjust(); //The adjustment of the offset (mainly used in differential mode)
+    CapOffsetLowAdjust();  //The adjustment of the offset (mainly used in differential mode)
+
+    //     addressRead(); //Reads address and provides binary value (used for debugging)
+
+    continuous(); //sets up continuous reading of the AD7745
+
+    //    CapGainHighAdjust(); //used for adjusting the gain of AD7745
+    //    CapGainLowAdjust();   //used for adjusting the gain of AD7745
+
+  }
+
+
+//  Serial.println("Init Finished");
 
   delay(15); // delay before the loop starts
 
@@ -93,71 +109,50 @@ void setup()
 
 void loop()
 {
-  if (DATA_READY) {
 
-    capacitance = dataRead();
-    DATA_READY = false;
+  if (DATA_READY0) {
+    tcaselect(0);
+    capas[0] = dataRead();
 
-    int current_state = counter % 3;
 
-    if (current_state == 0) {
-      //      switch to next state
-      digitalWrite(12, HIGH);
-      digitalWrite(11, LOW);
-//      digitalWrite(10, HIGH);
-//      digitalWrite(9, LOW);
-//      digitalWrite(8, LOW);
+  } else if (DATA_READY1) {
+    tcaselect(1);
+    capas[1] = dataRead();
 
-      //      Serial.print(F("[0]: "));
-    } else if (current_state == 1) {
-      digitalWrite(12, HIGH);
-      digitalWrite(11, HIGH);
-//      digitalWrite(10, HIGH);
-//      digitalWrite(9, HIGH);
-//      digitalWrite(8, LOW);
 
-      //      Serial.print(F("[1]: "));
-    } else {
-      digitalWrite(12, LOW);
-      digitalWrite(11, LOW);
-//      digitalWrite(10, LOW);
-//      digitalWrite(9, LOW);
-//      digitalWrite(8, LOW);
-
-      //      Serial.print(F("[2]: "));
-    }
-
-    if (current_state == 0) {
-      //      Serial.println(capacitance - capa0, DEC);
-      capacitance0 = capacitance;
-    } else if (current_state == 1) {
-      //      Serial.println(capacitance - capa1, DEC);
-      capacitance1 = capacitance;
-    } else {
-      //      Serial.println(capacitance - capa2, DEC);
-      capacitance2 = capacitance;
-      Serial.print(capacitance0, DEC);
-      Serial.print(F(", "));
-      Serial.print(capacitance1, DEC);
-      Serial.print(F(", "));
-      Serial.println(capacitance2, DEC);
-    }
-
+  } else if (DATA_READY2) {
+    tcaselect(2);
+    capas[2] = dataRead();
 
   }
+  Serial.print(capas[0], DEC);
+  Serial.print(F(", "));
+  Serial.print(capas[1], DEC);
+  Serial.print(F(", "));
+  Serial.println(capas[2], DEC);
+}
 
-  //  statusRead(); //reads the status of the AD7745
-  //  if (statusRead() & 0 == DataReady) { //if the capacitive conversion has been completed
-  //    capacitance = dataRead(); //read the data from capacitive registers of AD7745
-  //    Serial.println(capacitance, DEC);
-  //
-  //  }
 
-
+void MCU_callback0() {
+  DATA_READY0 = true;
+  DATA_READY1 = false;
+  DATA_READY2 = false;
+  //  Serial.println("7747_0 is here");
 
 }
 
-void MCU_timer() {
-  counter ++;
-  DATA_READY = true;
+void MCU_callback1() {
+  DATA_READY0 = false;
+  DATA_READY1 = true;
+  DATA_READY2 = false;
+  //  Serial.println("7747_1 is here");
+
+}
+
+void MCU_callback2() {
+  DATA_READY0 = false;
+  DATA_READY1 = false;
+  DATA_READY2 = true;
+  //  Serial.println("7747_2 is here");
+
 }

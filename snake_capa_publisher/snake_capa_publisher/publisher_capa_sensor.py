@@ -20,14 +20,14 @@ from std_msgs.msg import String
 import serial
 import time
 
-ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
 
 class CapaPublisher(Node):
 
     def __init__(self):
         super().__init__('capa_publisher')
         self.publisher_ = self.create_publisher(Capa, 'capa_sensor', 10)
-        timer_period = 0.05  # seconds
+        timer_period = 0.025  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 

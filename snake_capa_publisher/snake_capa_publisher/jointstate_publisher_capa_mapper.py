@@ -103,14 +103,14 @@ class MapPubSub(Node):
                                     'joint_25',
                                     'joint_26']
 
-            self.joint_states.position = [-(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
-                                      -(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+            self.joint_states.position = [(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
+                                      (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
                                       (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
                                       (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
                                       (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node

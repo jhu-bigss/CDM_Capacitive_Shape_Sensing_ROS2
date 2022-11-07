@@ -14,7 +14,7 @@ def generate_launch_description():
     capa_mapper_node = launch_ros.actions.Node(
         package='snake_capa_publisher',
         executable='capa_mapper',
-        parameters= [os.path.join(pkg_share, 'config', 'snake1.yaml')]
+        parameters= [os.path.join(pkg_share, 'config', 'snake3.yaml')]
     )
 
     capa_publisher_node = launch_ros.actions.Node(

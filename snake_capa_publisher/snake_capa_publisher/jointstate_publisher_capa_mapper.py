@@ -71,7 +71,7 @@ class MapPubSub(Node):
         
 
         else: # publish to the joint state
-            # print((math.pi/180)*0.1*(-43.27*(capa0_val - capa0_temp)))
+            print((math.pi/180)*bottom_joint*(capa0_val - capa0_temp))
             # print((math.pi/180)*0.12987*(-48.808*(capa1_val - capa1_temp) - 63.72+63.72))
             # print((math.pi/180)*0.13333*(33.018*(capa2_val - capa2_temp)-7.6044))
             self.joint_states.header.stamp = self.get_clock().now().to_msg()
@@ -101,7 +101,8 @@ class MapPubSub(Node):
                                     'joint_23',
                                     'joint_24',
                                     'joint_25',
-                                    'joint_26']
+                                    'joint_26',
+                                    'joint_27']
 
             self.joint_states.position = [(math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
                                       (math.pi/180)*bottom_joint*(capa2_val - capa2_temp),  #bottom node
@@ -121,6 +122,7 @@ class MapPubSub(Node):
                                       (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
                                       (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
                                       (math.pi/180)*middle_joint*(capa1_val - capa1_temp),  #middle node
+                                      (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
                                       (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
                                       (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node
                                       (math.pi/180)*top_joint*(capa0_val - capa0_temp),  #top node

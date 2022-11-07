@@ -25,7 +25,7 @@ int CapOffsetL = 0x0E;      //Cap gain Offset adress
 
 int CapChanProp = B10100000;    //capacitive channel properties
 int ExcProp = B00001110;        //excitation properties
-int ConfigProp = B00010001;     //configuration properties
+int ConfigProp = B00010010;     //configuration properties
 int CapDacProp = B0;            //Capacitive DAC setup properties
 int CapGainPropH = B01011101;   //cap gain properties high
 int CapGainPropL = B10111101;   //cap gain properties low
@@ -63,13 +63,13 @@ void setup()
 {
   Serial.begin(9600);
   Wire.begin();
-  // interrupt service routine setup
-  pinMode(interruptPin0, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin0), MCU_callback0, FALLING);
-  pinMode(interruptPin1, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin1), MCU_callback1, FALLING);
-  pinMode(interruptPin2, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin2), MCU_callback2, FALLING);
+//  // interrupt service routine setup
+//  pinMode(interruptPin0, INPUT_PULLUP);
+//  attachInterrupt(digitalPinToInterrupt(interruptPin0), MCU_callback0, FALLING);
+//  pinMode(interruptPin1, INPUT_PULLUP);
+//  attachInterrupt(digitalPinToInterrupt(interruptPin1), MCU_callback1, FALLING);
+//  pinMode(interruptPin2, INPUT_PULLUP);
+//  attachInterrupt(digitalPinToInterrupt(interruptPin2), MCU_callback2, FALLING);
 
 
   for (int tca = 0; tca < maxtca; tca ++) {
@@ -109,57 +109,47 @@ void setup()
 
 void loop()
 {
-
-
-  if (DATA_READY0) {
+  int current_state = counter % 3;
+  if (current_state == 0){
     tcaselect(0);
+    Configuration();
     capas[0] = dataRead();
-
-  } else if (DATA_READY1) {
+  }else if (current_state == 1){
     tcaselect(1);
+    Configuration();
     capas[1] = dataRead();
-
-
-  } else if (DATA_READY2) {
+  }else{
     tcaselect(2);
+    Configuration();
     capas[2] = dataRead();
-
   }
-        
+  counter ++;
   Serial.print(capas[0], DEC);
-  Serial.print(F(", "));
+  Serial.print(", ");
   Serial.print(capas[1], DEC);
-  Serial.print(F(", "));
+  Serial.print(", ");
   Serial.println(capas[2], DEC);
-
-    interrupts();
-
+ 
 }
 
 
 void MCU_callback0() {
-    noInterrupts();
   DATA_READY0 = true;
   DATA_READY1 = false;
   DATA_READY2 = false;
-
-
   //  Serial.println("7747_0 is here");
 
 }
 
 void MCU_callback1() {
-    noInterrupts();
   DATA_READY0 = false;
   DATA_READY1 = true;
   DATA_READY2 = false;
-
   //  Serial.println("7747_1 is here");
 
 }
 
 void MCU_callback2() {
-    noInterrupts();
   DATA_READY0 = false;
   DATA_READY1 = false;
   DATA_READY2 = true;

@@ -111,15 +111,15 @@ void loop()
 {
   int current_state = counter % 3;
   if (current_state == 0){
-    tcaselect(0);
+    tcaselect(0);  // single conversion setup 0
     Configuration();
     capas[0] = dataRead();
   }else if (current_state == 1){
-    tcaselect(1);
+    tcaselect(1);  // single conversion setup 1
     Configuration();
     capas[1] = dataRead();
   }else{
-    tcaselect(2);
+    tcaselect(2);  // single conversion setup 2
     Configuration();
     capas[2] = dataRead();
   }

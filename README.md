@@ -11,21 +11,25 @@
 * [snake_description](/snake_description/): Snake (CDM) URDF with a GUI.
 
 ## Run
-Updated launch file, single terminal run:
-```bash
-ros2 launch snake_capa_publisher snake_param.launch.py 
-```
-
-
 Plug in Arduino, and run:
 
 ```bash
 ros2 run snake_capa_publisher capa_publisher
 ```
 
-
 To Calibrate and send the data, run:
 
+```bash
+ros2 launch snake_capa_publisher snake_param.launch.py 
+```
+
+To run the evaluation tools:
+```bash
+ros2 run snake_shape_detection detection_node 
+```
+
+
+Updated launch file, single terminal run for every nodes involves (might not work):
 ```bash
 ros2 launch snake_capa_publisher snake_param.launch.py 
 ```

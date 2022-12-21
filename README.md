@@ -9,6 +9,7 @@
 * [snake_capa_msg](/snake_capa_msg/): Customized ROS2 message type for capacitive shape sensing.
 * [snake_capa_publisher](/snake_capa_publisher/): Two ROS2 nodes: **capa_publisher** & **capa_mapper** (See below)
 * [snake_description](/snake_description/): Snake (CDM) URDF with a GUI.
+* [snake_shape_detection](/snake_detection/): ROS2 node (**detection_node**) for evaluating the result of reconstruction.
 
 ## Run
 Plug in Arduino, and run:

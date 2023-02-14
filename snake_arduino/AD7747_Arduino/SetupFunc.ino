@@ -63,6 +63,17 @@ void CapDacARegister()
   Wire.endTransmission();
 }
 
+void CapDacBRegister()
+{
+  Wire.beginTransmission(Address);
+    
+  Wire.write(CapDacBReg);
+  
+  Wire.write(CapDacBProp);
+  
+  Wire.endTransmission();
+}
+
 void CapOffsetHighAdjust()
 {
  Wire.beginTransmission(Address);

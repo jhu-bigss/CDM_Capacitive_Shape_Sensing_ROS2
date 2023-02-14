@@ -1,0 +1,10 @@
+capa_mapper:
+  ros__parameters:
+    bottom: 2.663071
+    middle: 3.543844
+    top: 2.686893
+# capa_mapper:
+#   ros__parameters:
+#     bottom: 3.842278
+#     middle: 6.246925
+#     top: 5.981215

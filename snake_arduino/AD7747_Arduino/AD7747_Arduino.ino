@@ -17,7 +17,8 @@ int Address = B1001000;
 int CapSetup = 0x07;        //capacitive channel setup address
 int ExcSetup = 0x09;        //excitation setup address
 int ConfigSetup = 0x0A;     //configuration setup addrss
-int CapDacAReg = 0x0B;      //Capacitive DAC setup address
+int CapDacAReg = 0x0B;      //Capacitive DACA setup address
+int CapDacBReg = 0x0C;      //Capacitive DACB setup address
 int CapGainRegH = 0x0F;     //Cap gain high adress
 int CapGainRegL = 0x10;     //Cap gain high adress
 int CapOffsetH = 0x0D;      //Cap Offset high adress
@@ -26,7 +27,8 @@ int CapOffsetL = 0x0E;      //Cap gain Offset adress
 int CapChanProp = B10100000;    //capacitive channel properties
 int ExcProp = B00001110;        //excitation properties
 int ConfigProp = B00010010;     //configuration properties
-int CapDacProp = B0;            //Capacitive DAC setup properties
+int CapDacProp = B0;            //Capacitive DACA setup properties
+int CapDacBProp = B10000111;           //Capacitive DACB setup properties
 int CapGainPropH = B01011101;   //cap gain properties high
 int CapGainPropL = B10111101;   //cap gain properties low
 int CapOffsetPropH = B01110111; //cap offset properties high
@@ -88,6 +90,7 @@ void setup()
     CapInput(); //Capacitive input properties
 
     CapDacARegister(); //Capacitive data aquisition properties
+    CapDacBRegister();
     CapOffsetHighAdjust(); //The adjustment of the offset (mainly used in differential mode)
     CapOffsetLowAdjust();  //The adjustment of the offset (mainly used in differential mode)
 
@@ -113,14 +116,17 @@ void loop()
   if (current_state == 0){
     tcaselect(0);  // single conversion setup 0
     Configuration();
+//    delay(30);
     capas[0] = dataRead();
   }else if (current_state == 1){
     tcaselect(1);  // single conversion setup 1
     Configuration();
+//    delay(30);
     capas[1] = dataRead();
   }else{
     tcaselect(2);  // single conversion setup 2
     Configuration();
+//    delay(30);
     capas[2] = dataRead();
   }
   counter ++;

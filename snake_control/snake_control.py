@@ -3,6 +3,8 @@ from pynput.keyboard import Key, Listener, KeyCode
 import time
 import os
 import serial
+# import threading
+# import csv
 
 # from read_keyboard import rkb as rkb
 
@@ -14,7 +16,8 @@ vel_user = 0
 restart_counter = 0
 
 # initialize serial communication for arduino
-ser = serial.Serial('/dev/ttyACM0', 115200)
+# ser1 = serial.Serial("/dev/ttyACM1", 9600, timeout=0.3)  # snake COM port
+ser = serial.Serial('/dev/ttyACM1', 115200)
 print("Reset Arduino")
 print("(A) Left, (D) Right, (R) Automatic moving, (S): Stop & Restart")
 time.sleep(3)
@@ -25,6 +28,7 @@ def press_callback(key):  # callback function for pressing state of certain keys
     global val_a
     global val_s
     global val_d
+    global direction
     num_A = 0
     num_D = 0
     if key == KeyCode.from_char('w'):
@@ -48,7 +52,8 @@ def press_callback(key):  # callback function for pressing state of certain keys
 
     elif key == KeyCode.from_char('r'):
         print('r is pressed: automatic moving')
-        while (1):
+
+        while 1:
             ser.write(bytes('H', 'UTF-8'))
             time.sleep(5)
             ser.write(bytes('H', 'UTF-8'))
@@ -95,9 +100,21 @@ def release_callback(key):  # callback function for the releasing state of keys
 
 
 def read_input2(): # this is the master function used for keyboard control
+    # x = threading.Thread(target=thread_function)
+    # x.start()
     l = keyboard.Listener(on_press=press_callback, on_release=release_callback)
     l.start()
     l.join()
+
+
+# def thread_function():
+#     global line_1, last_received1
+#     buffer1 = ''
+#     while 1:
+#         buffer1 += ser1.read(ser1.inWaiting()).decode()
+#         if '\n' in buffer1:
+#             last_received1, buffer1 = buffer1.split('\n')[-2:]
+#         line_1 = last_received1
 
 
 

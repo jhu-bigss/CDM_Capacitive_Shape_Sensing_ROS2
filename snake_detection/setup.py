@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'detection_node = snake_shape_detection.detection_node:main'
+            'snake_sub = snake_shape_detection.detection_node:main'
         ],
     },
 )

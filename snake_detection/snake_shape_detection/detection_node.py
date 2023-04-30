@@ -1,17 +1,23 @@
 # import math
+import csv
+import os
+import time
+import cv2
 import numpy as np
+from math import atan2 as atan2
+from math import sqrt as sqrt
+from scipy.optimize import curve_fit
+import pyrealsense2 as rs
+import matplotlib.pyplot as plt
 # from scipy.interpolate import CubicSpline
 
 import rclpy
+# from util import *
 from rclpy.node import Node
-
 from snake_capa_msg.msg import Capa
 # from tf2_msgs.msg import TFMessage
-import matplotlib.pyplot as plt
 
-import time
-import cv2
-import pyrealsense2 as rs
+
 
 # import os
 
@@ -19,20 +25,21 @@ _EPS = np.finfo(float).eps * 4.0
 cali_width, cali_height = 170, 105
 scale = 2
 snake_real_length = 104
-# urdf = [0.0410297210859283, 0.00132488253734261, 0.00131520544017122, \
-#         0.00130552834300195, 0.00129585124582631, 0.00128617414865916, \
-#         0.00127649705148352, 0.00126681995431425, 0.00125714285714286, \
-#         0.00124746575997359, 0.00123778866279794, 0.00122811156562867, \
-#         0.00121843446845728, 0.00120875737128587, 0.00119908027411451, \
-#         0.0011894031769431, 0.0011797260797717, 0.00117004898260031, \
-#         0.00116037188542892, 0.00115069478825752, 0.00114101769108614, \
-#         0.00113295011421438, 0.00112972108592831, 0.00112972108593046, \
-#         0.00112972108592616, 0.00112972108592835, 0.00112972108592829, \
-#         0.0025297210859283]
+urdf = [0.0410297210859283, 0.00132488253734261, 0.00131520544017122, \
+        0.00130552834300195, 0.00129585124582631, 0.00128617414865916, \
+        0.00127649705148352, 0.00126681995431425, 0.00125714285714286, \
+        0.00124746575997359, 0.00123778866279794, 0.00122811156562867, \
+        0.00121843446845728, 0.00120875737128587, 0.00119908027411451, \
+        0.0011894031769431, 0.0011797260797717, 0.00117004898260031, \
+        0.00116037188542892, 0.00115069478825752, 0.00114101769108614, \
+        0.00113295011421438, 0.00112972108592831, 0.00112972108593046, \
+        0.00112972108592616, 0.00112972108592835, 0.00112972108592829, \
+        0.0025297210859283]
 
-# urdf_real_length = [x * 3000 for x in urdf]
+urdf_real_length = [x * 3000 for x in urdf]
 
-sample_pts = np.arange(28)*3.8
+sample_pts = [sum(urdf_real_length[len(urdf_real_length)-i:]) for i in range(len(urdf_real_length))]
+# sample_pts = np.arange(28)*3.8
 
 def rotMtx(theta):
     c, s = np.cos(theta), np.sin(theta)
@@ -66,6 +73,46 @@ def colorFilter(img_color, mode = "blue"):
     img_gray = cv2.cvtColor(img_mask, cv2.COLOR_RGB2GRAY)
     # img_thinned = cv2.ximgproc.thinning(img_gray)
     return img_gray
+
+def poly_func(y, a, b, c):
+    return a*y**3 + b*y**2 + c*y
+
+def poly_grad(y, a, b, c):
+    return 3*a*y**2 + 2*b*y + c
+
+def cv_curve_fit(x, y):
+    y, ind = np.unique(y, return_index=True)
+    x = x[ind]
+    popt, pcov = curve_fit(poly_func, y, x)
+    return popt
+
+def get_angle(pos_y, grad, popt):
+    gradient = grad(pos_y, *popt)
+    return atan2(gradient, 1)
+
+def get_angles_from_lengthes(popt, lengthes, step = 0.001):
+    prev_x, curr_y, curr_idx, curr_length = 0, 0, 0, 0
+    angles = []
+
+    while curr_idx < len(lengthes):
+        x = poly_func(curr_y, *popt)
+        dl = sqrt((x-prev_x)**2 + step**2)
+        curr_length += dl
+        if curr_length >= lengthes[curr_idx]:
+            curr_idx += 1
+            angles.append(get_angle(curr_y, poly_grad, popt))
+        curr_y += step
+        prev_x = x
+    return angles
+# def get_pos_from_length(length, popt, step = 0.001):
+#     x_prev, y = 0, 0
+#     while (length > 0):
+#         x = poly_func(y, *popt)
+#         dl = sqrt((x-x_prev)**2 + step**2)
+#         length -= dl
+#         y += step
+#         x_prev = x
+#     return (x, y)
 
 # def quaternion_matrix(transform):
 #     # Calculate the corresponding transformation function, 
@@ -184,9 +231,16 @@ class CapaListener(Node):
             # cv2.waitKey(0)
             img_thinned = colorFilter(img_manual, mode='blue')
             x_real, y_real = self.get_real_pos(img_thinned)
+            popt = cv_curve_fit(x_real, y_real)
+            y_plot = np.linspace(min(y_real), max(y_real), num=100)
+            x_plot = poly_func(y_plot, *popt)
+
+            angles = get_angles_from_lengthes(popt, sample_pts, step = 0.001)
+            # print("the angles are", angles)
+            self.write_values(angles, self.capa)
             plt.clf()
 
-        self.plot_simulation(x_real, y_real)
+        self.plot_simulation(x_real, y_real, x_plot, y_plot, angles)
 
     def get_init_pos(self, img_thinned):
         indexes = np.where(img_thinned > 0)
@@ -211,7 +265,7 @@ class CapaListener(Node):
         x_real, y_real = x_init * self.ratio, y_init * self.ratio
         return x_real, y_real
 
-    def plot_simulation(self, x_real, y_real):
+    def plot_simulation(self, x_real, y_real, x_plot, y_plot, angles):
         plt.cla()
         # indexes = np.where(img_thinned > 0)
         # if len(indexes) == 0:
@@ -226,12 +280,19 @@ class CapaListener(Node):
         str_capa_0 = "capa0: " + str(round(self.capa[0], 5))
         str_capa_1 = "capa1: " + str(round(self.capa[1], 5))
         str_capa_2 = "capa2: " + str(round(self.capa[2], 5))
+        str_angle_0 = "angle0: " + str(round(angles[8]/np.pi*180, 5))
+        str_angle_1 = "angle1: " + str(round(angles[17]/np.pi*180, 5))
+        str_angle_2 = "angle2: " + str(round(angles[26]/np.pi*180, 5))
         plt.xlim((-100, 100))
         plt.ylim((0, 200))
         plt.text(40,180, str_capa_0)
         plt.text(40,170, str_capa_1)
         plt.text(40,160, str_capa_2)
-        plt.scatter(x_real, y_real)
+        plt.text(40,150, str_angle_0)
+        plt.text(40,140, str_angle_1)
+        plt.text(40,130, str_angle_2)
+        plt.plot(x_real, y_real, 'yx', markersize = 3, label='vision points')
+        plt.plot(x_plot, y_plot, 'r-', label='regression points')
         plt.draw()
         plt.pause(0.01)
 
@@ -273,6 +334,28 @@ class CapaListener(Node):
                     self.cali_pts_i.append(i)
                     self.cali_pts_j.append(j)
             print(i, j)
+
+    def write_values(self, angles, capas):
+        # Function to write data to a CSV file
+        def write_to_csv(filename, data, header):
+            file_exists = os.path.isfile(filename)
+            with open(filename, mode='a', newline='') as csv_file:
+                writer = csv.writer(csv_file)
+                if not file_exists:
+                    writer.writerow(header)
+                writer.writerow(data)
+
+        angles_csv_file_name = 'angles_01.csv'
+        capas_csv_file_name = 'capas_01.csv'
+
+        # Headers for each CSV file
+        angles_header = ['Angle{}'.format(i+1) for i in range(len(angles))]
+        capas_header = ['Capa{}'.format(i+1) for i in range(len(capas))]
+
+        # Write angles and capas to their respective CSV files
+        write_to_csv(angles_csv_file_name, angles, angles_header)
+        write_to_csv(capas_csv_file_name, capas, capas_header)
+        print("save_shape!")
 
 
 

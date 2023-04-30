@@ -23,7 +23,7 @@ def get_angle(pos_y, grad, popt):
     gradient = grad(pos_y, *popt)
     return atan2(gradient)
 
-def get_pos_from_length(length, step = 0.001):
+def get_pos_from_length(length, popt, step = 0.001):
     x_prev, y = 0, 0
     while (length > 0):
         x = poly_func(y, *popt)
@@ -33,9 +33,24 @@ def get_pos_from_length(length, step = 0.001):
         x_prev = x
     return (x, y)
 
-popt = cv_curve_fit(x, y)
-y_plot = np.linspace(min(y), max(y), num=100)
-x_plot = poly_func(y_plot, *popt)
-plt.plot(x, y, 'o', label='data points')
-plt.plot(x_plot, y_plot, 'r-')
-plt.show()
+def get_angles_from_poses(popt, lengthes, step = 0.001):
+    prev_x, curr_y, curr_idx, curr_length = 0, 0, 0, 0
+    angles = []
+
+    while curr_idx < len(lengthes):
+        x = poly_func(curr_y, *popt)
+        dl = sqrt((x-prev_x)**2 + step**2)
+        curr_length += dl
+        if curr_length >= lengthes[curr_idx]:
+            curr_idx += 1
+            angles.append(get_angle(curr_y, poly_grad, popt))
+        curr_y += step
+        prev_x = x
+    return angles
+
+# popt = cv_curve_fit(x, y)
+# y_plot = np.linspace(min(y), max(y), num=100)
+# x_plot = poly_func(y_plot, *popt)
+# plt.plot(x, y, 'o', label='data points')
+# plt.plot(x_plot, y_plot, 'r-')
+# plt.show()

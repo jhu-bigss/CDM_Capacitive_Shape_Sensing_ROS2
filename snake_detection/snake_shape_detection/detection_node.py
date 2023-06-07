@@ -17,8 +17,6 @@ from rclpy.node import Node
 from snake_capa_msg.msg import Capa
 # from tf2_msgs.msg import TFMessage
 
-
-
 # import os
 
 _EPS = np.finfo(float).eps * 4.0
@@ -36,7 +34,10 @@ urdf = [0.0410297210859283, 0.00132488253734261, 0.00131520544017122, \
         0.00112972108592616, 0.00112972108592835, 0.00112972108592829, \
         0.0025297210859283]
 
+# l = [4.4, 3.6, 3.49, 3.49, ..., 3.8]
+
 urdf_real_length = [x * 3000 for x in urdf]
+check_point_length = [30.83, 67.03, 101.73]
 
 sample_pts = [sum(urdf_real_length[len(urdf_real_length)-i:]) for i in range(len(urdf_real_length))]
 # sample_pts = np.arange(28)*3.8
@@ -152,9 +153,14 @@ class CapaListener(Node):
         self.capa = [0.0, 0.0, 0.0]
         self.cali_pts_i = []
         self.cali_pts_j = []
+        self.marker_i = []
+        self.marker_j = []
+        self.marker_x = []
+        self.marker_y = []
         self.theta = 0
         self.M = np.ones((3, 4))
         self.ratio = 1
+        self.is_corret = True
 
         # Configure depth and color streams
         self.pipeline = rs.pipeline()
@@ -229,18 +235,49 @@ class CapaListener(Node):
             img_manual = cv2.warpPerspective(img_color, self.M, (h, w))
             # cv2.imshow("manual_calibration", img_manual)
             # cv2.waitKey(0)
-            img_thinned = colorFilter(img_manual, mode='blue')
-            x_real, y_real = self.get_real_pos(img_thinned)
+            img_blue = colorFilter(img_manual, mode='blue')
+            _, img_binary = cv2.threshold(img_blue, 75, 255, cv2.THRESH_BINARY)
+
+            num_labels, labels_im, stats, centroids = cv2.connectedComponentsWithStats(img_binary)
+
+            self.marker_i = centroids[1:,0]
+            self.marker_j = centroids[1:,1]
+
+            # print("the x", self.marker_i)
+            # print("the y", self.marker_j)
+            print("the numbers of image is:", num_labels)
+            
+            if len(self.marker_i) == 29 & len(self.marker_j):
+                self.is_correct = True
+            else:
+                self.is_correct = False
+
+            # img_green = colorFilter(img_manual, mode='green')
+
+            # img_binary = img_green > 155
+            # plt.imshow(img_binary)
+            # plt.show()
+            # cv2.namedWindow("img_blue")
+            # cv2.imshow("img_blue", img_blue)
+            # cv2.waitKey(0)
+            # quit()
+
+            self.marker_x, self.marker_y = self.get_real_marker()
+            # print("the marker x is:", marker_x)
+            # print("the marker y is:", marker_y)
+
+            x_real, y_real = self.get_real_pos(img_blue)
             popt = cv_curve_fit(x_real, y_real)
             y_plot = np.linspace(min(y_real), max(y_real), num=100)
             x_plot = poly_func(y_plot, *popt)
 
-            angles = get_angles_from_lengthes(popt, sample_pts, step = 0.001)
+            # angles = get_angles_from_lengthes(popt, sample_pts, step = 0.001)
             # print("the angles are", angles)
-            self.write_values(angles, self.capa)
+            if self.is_corret:
+                self.write_values(self.capa)
             plt.clf()
 
-        self.plot_simulation(x_real, y_real, x_plot, y_plot, angles)
+        self.plot_simulation(x_real, y_real)
 
     def get_init_pos(self, img_thinned):
         indexes = np.where(img_thinned > 0)
@@ -265,7 +302,17 @@ class CapaListener(Node):
         x_real, y_real = x_init * self.ratio, y_init * self.ratio
         return x_real, y_real
 
-    def plot_simulation(self, x_real, y_real, x_plot, y_plot, angles):
+    def get_real_marker(self):
+        # print("the datatype of marker index is", type(self.marker_i))
+        # print("the x", self.marker_i)
+        # print("the y", self.marker_j)
+        x = np.array(self.marker_i) - self.cali_pts_i[4]
+        y = -np.array(self.marker_j) + self.cali_pts_j[4]
+        x_init, y_init = x/scale, y/scale
+        x_real, y_real = x_init * self.ratio, y_init * self.ratio
+        return x_real, y_real
+
+    def plot_simulation(self, x_real, y_real):
         plt.cla()
         # indexes = np.where(img_thinned > 0)
         # if len(indexes) == 0:
@@ -277,22 +324,36 @@ class CapaListener(Node):
 
         # ## Map to real scale
         # x_real, y_real = x/scale, y/scale
+        dx = self.marker_x[0] - self.marker_x[1]
+        dy = self.marker_y[0] - self.marker_y[1]
+        tip_angle = atan2(dy, dx) - np.pi/2
+        str_tip_angle = "tip angle: " + str(round(tip_angle, 5))
+        str_tip_pos = "tip pos: (" + str(round(self.marker_x[0], 3)) + "," + str(round(self.marker_y[0], 3)) + ")"
+
         str_capa_0 = "capa0: " + str(round(self.capa[0], 5))
         str_capa_1 = "capa1: " + str(round(self.capa[1], 5))
         str_capa_2 = "capa2: " + str(round(self.capa[2], 5))
-        str_angle_0 = "angle0: " + str(round(angles[8]/np.pi*180, 5))
-        str_angle_1 = "angle1: " + str(round(angles[17]/np.pi*180, 5))
-        str_angle_2 = "angle2: " + str(round(angles[26]/np.pi*180, 5))
+        # str_angle_0 = "angle0: " + str(round(angles[8]/np.pi*180, 5))
+        # str_angle_1 = "angle1: " + str(round(angles[17]/np.pi*180, 5))
+        # str_angle_2 = "angle2: " + str(round(angles[26]/np.pi*180, 5))
+        # str_x_max = "x max: " + str(round(max(x_real), 5))
+        # str_x_min = "x min: " + str(round(min(x_real), 5))
         plt.xlim((-100, 100))
         plt.ylim((0, 200))
         plt.text(40,180, str_capa_0)
         plt.text(40,170, str_capa_1)
         plt.text(40,160, str_capa_2)
-        plt.text(40,150, str_angle_0)
-        plt.text(40,140, str_angle_1)
-        plt.text(40,130, str_angle_2)
+
+        plt.text(40,150, str_tip_angle)
+        plt.text(40,140, str_tip_pos)
+        # plt.text(40,150, str_angle_0)
+        # plt.text(40,140, str_angle_1)
+        # plt.text(40,130, str_angle_2)
+        # plt.text(40,120, str_x_max)
+        # plt.text(40,110, str_x_min)
         plt.plot(x_real, y_real, 'yx', markersize = 3, label='vision points')
-        plt.plot(x_plot, y_plot, 'r-', label='regression points')
+        plt.plot(self.marker_x, self.marker_y, 'r', marker='o', markersize = 3, label='joints')
+        # plt.plot(x_plot, y_plot, 'r-', label='regression points')
         plt.draw()
         plt.pause(0.01)
 
@@ -315,6 +376,11 @@ class CapaListener(Node):
         self.theta = np.arctan(temp_i/ temp_j)
 
     def correction_S(self, img_thinned):
+        # cv2.namedWindow("img_thinned")
+        # cv2.imshow("img_thinned", img_thinned)
+        # cv2.waitKey(0)
+        # quit()
+
         x_real, y_real = self.get_init_pos(img_thinned)
         tip_idx = np.argmax(y_real)
         snake_img_length = (x_real[tip_idx]**2 + y_real[tip_idx]**2)**0.5
@@ -335,7 +401,7 @@ class CapaListener(Node):
                     self.cali_pts_j.append(j)
             print(i, j)
 
-    def write_values(self, angles, capas):
+    def write_values(self, capas):
         # Function to write data to a CSV file
         def write_to_csv(filename, data, header):
             file_exists = os.path.isfile(filename)
@@ -345,16 +411,23 @@ class CapaListener(Node):
                     writer.writerow(header)
                 writer.writerow(data)
 
-        angles_csv_file_name = 'angles_01.csv'
-        capas_csv_file_name = 'capas_01.csv'
+        # angles_csv_file_name = 'angles_new5.csv'
+        capas_csv_file_name = 'capas_new_c.csv'
+        x_csv_file_name = 'x_new_c.csv'
+        y_csv_file_name = 'y_new_c.csv'
 
         # Headers for each CSV file
-        angles_header = ['Angle{}'.format(i+1) for i in range(len(angles))]
+        # angles_header = ['Angle{}'.format(i+1) for i in range(len(angles))]
         capas_header = ['Capa{}'.format(i+1) for i in range(len(capas))]
+        x_header = ['x{}'.format(i+1) for i in range(len(self.marker_x))]
+        y_header = ['y{}'.format(i+1) for i in range(len(self.marker_y))]
 
-        # Write angles and capas to their respective CSV files
-        write_to_csv(angles_csv_file_name, angles, angles_header)
+
+        # Write angles and capas to their respective CSV filescapas_01
+        # write_to_csv(angles_csv_file_name, angles, angles_header)
         write_to_csv(capas_csv_file_name, capas, capas_header)
+        write_to_csv(x_csv_file_name, self.marker_x, x_header)
+        write_to_csv(y_csv_file_name, self.marker_y, y_header)
         print("save_shape!")
 
 
